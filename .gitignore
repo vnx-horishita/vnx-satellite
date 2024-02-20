@@ -1,0 +1,7 @@
+webmap/node_modules/
+webmap/backup/
+webmap/dist/app/data/
+webmap/dist/app/fonts/
+webmap/package-lock.json
+webmap/webpack.config.js
+.DS_Store
