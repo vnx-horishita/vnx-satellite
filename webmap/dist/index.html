@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -21,15 +21,15 @@
         </div>
         <div class="slider-container">
             <label id="nLabel"></label>
-            <button id="playButton">▶</button>
+            <button id="playButton" title="年次変化を自動再生する">▶</button>
             <select id="slidetype-id" name="slidetype-id" class="slidetype-select"></select>
             <label id="sLabel"></label>
             <input id="slider" type="range" min="2010" max="2023" step="1" value="2023" />
-            <button id="stopButton">||</button>
-            <button id="listButton">リスト表示切替</button>
-            <button id="labelButton">ラベル表示切替</button>
-            <button id="chartButton">円グラフ</button>
-            <button id="settingButton">表示設定変更</button>
+            <button id="stopButton" title="自動再生を停止する">||</button>
+            <button id="listButton" title="文献サンプルリストの表示・非表示を切り替える">リスト表示切替</button>
+            <button id="labelButton" title="ラベルの表示・非表示を切り替える">ラベル表示切替</button>
+            <button id="chartButton" title="密集箇所の直近件数比率を示す円グラフを表示する">円グラフ</button>
+            <button id="settingButton" title="表示設定ダイアログを開く">表示設定変更</button>
         </div>
         <div id="ta-legend" class="legend-overlay"></div>
         <div id="feature-list" class="list-overlay"></div>
