@@ -12,8 +12,12 @@
         <div class="map-overlay top">
             <label id="tLabel">▼ 俯瞰図選択</label>
             <select id="category-id" name="category-id" class="category-select"></select>
+        </div>
+        <div id="map-setting" class="setting-overlay top">
+            <div><h3>表示設定</h3></div>
             <label id="tLabel">▼ 色テーマ選択</label>
             <select id="color-id" name="color-id" class="color-select"></select>
+            <div id="bx-setting" class="setting-slider"></div>
         </div>
         <div class="slider-container">
             <label id="nLabel"></label>
@@ -25,6 +29,7 @@
             <button id="listButton">リスト表示切替</button>
             <button id="labelButton">ラベル表示切替</button>
             <button id="chartButton">円グラフ</button>
+            <button id="settingButton">表示設定変更</button>
         </div>
         <div id="ta-legend" class="legend-overlay"></div>
         <div id="feature-list" class="list-overlay"></div>

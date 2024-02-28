@@ -3,7 +3,7 @@ import * as pmtiles from "pmtiles";
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './style.css';
 
-const categoryNames = ["CounterDisaster","AsahiKasei","DNP","Kajima","NEC","Nintendo","NipponPaper","Nissan","Omron","Sharp","TORAY","Toshiba"];
+const categoryNames = ["CounterDisaster","SolarCell","AsahiKasei","DNP","Kajima","NEC","Nintendo","NipponPaper","Nissan","Omron","Sharp","TORAY","Toshiba"];
 const slidetypes = ["経年積上","単年ごと"];
 let target_slidetype = 0;
 let flag_slidetype = "経年積上";
@@ -159,7 +159,7 @@ const map = new maplibregl.Map({
     attributionControl:false
 });
 
-map.addControl(new maplibregl.NavigationControl({showCompass:true, showZoom:true, visualizePitch:true}, 'top-left'));
+//map.addControl(new maplibregl.NavigationControl({showCompass:true, showZoom:true, visualizePitch:true}, 'top-left'));
 
 map.on('load', function () {
     map.addSource('doc_simple', {
@@ -300,7 +300,7 @@ map.on('load', function () {
     });
 
     map.on('moveend', generateList);
-    //map.on('moveend', updateMarkers);
+    map.on('moveend', updateSetting);
     map.zoomIn({duration: 1000});
     
     const selected_category = document.querySelector('.category-select');
@@ -384,6 +384,42 @@ function updateMarkers() {
     }
     markersOnScreen = newMarkers;
 }
+
+//Create a box for display setting 
+const bx_setting = document.getElementById('bx-setting')
+let settingContent = '';
+settingContent += '<p>▼ 色の調整</p>';
+settingContent += '<div><input type="range" id="slider1" min="1" max="20" value="10"><span id="slider1Value">10</span></div>';
+settingContent += '<p>▼ 表示位置パラメータ</p>';
+settingContent += '<div><input type="text" id="inputSetting" name="name" required maxlength="100" size="20" /><button id="settingCopyButton" title="設定値をコピーする">📋</button></div>';
+settingContent += '<div><button id="displayButton" title="設定値の場所に移動する">マップ移動</button><button id="returnButton" title="初期表示位置に移動する">初期位置に戻す</button></div>';
+bx_setting.innerHTML = settingContent;
+
+const settingInput = document.getElementById('inputSetting');
+function updateSetting() {
+    settingInput.value = String(map.getCenter().lat.toFixed(3)+","+map.getCenter().lng.toFixed(3)+","+map.getZoom().toFixed(1)+","+map.getBearing().toFixed(2)+","+map.getPitch().toFixed(2));
+}
+
+document.getElementById('settingCopyButton').addEventListener('click', function () {
+    //input要素を取得
+    let copyText = document.getElementById("inputSetting");
+    //テキストを選択
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); //モバイルデバイス用(モバイル利用は想定しないが念のため)
+    //クリップボードにコピー
+    navigator.clipboard.writeText(copyText.value).then(function() {
+      alert("クリップボードに表示設定パラメータをコピーしました。");
+    }, function(err) {
+      console.error('コピーに失敗しました: ', err);
+    });
+});
+
+let hp01;
+document.getElementById('slider1').addEventListener('input', function() {
+        document.getElementById('slider1Value').textContent = this.value;
+        hp01 = Number(this.value)/10;
+        map.setPaintProperty('doc_heat', 'heatmap-radius', ['interpolate',['linear'],['zoom'],4,view_param.heatRadius1*hp01,7,view_param.heatRadius2*hp01,12,view_param.heatRadius3*hp01]);
+});
 
 //Create a legend based on the displayed layer 
 const ta_legend = document.getElementById('ta-legend')
@@ -544,8 +580,43 @@ document.getElementById('listButton').style.color = "black";
 document.getElementById('chartButton').style.backgroundColor = "#999";
 document.getElementById('chartButton').style.color = "white";
 
+document.getElementById('settingButton').style.backgroundColor = "#999";
+document.getElementById('settingButton').style.color = "white";
+
 document.getElementById('feature-list').style.display ="block";
+
 document.getElementById('ta-legend').style.display ="none";
+document.getElementById('map-setting').style.display ="none";
+
+document.getElementById('returnButton').addEventListener('click', function () {
+    map.flyTo({center:init_coord, zoom:init_zoom+1, bearing:init_bearing, pitch:init_pitch, speed:0.5});
+});
+
+document.getElementById('displayButton').addEventListener('click', function () {
+    //map.getCenter().lat.toFixed(5)+","+map.getCenter().lng.toFixed(5)+","+map.getZoom()+","+map.getBearing()+","+map.getPitch()
+    //1つ目はlat, 2つ目はlng, 3つ目はzoom, 4つ目はbearing, 5つ目はpitch
+    //lat:-50~50, lng:-10~25, zoom:4~15, bearing:-180~180, pitch:0~60（要検証）
+    const inputValue = settingInput.value;//値を取得
+    const values = inputValue.split(',').map(Number);//取得した値をカンマ区切りにして数値として5つの値に格納。数値以外があるとNaN判定される。
+    let v_lat, v_lng, v_zoom, v_bear, v_pit;
+    if (values.length !== 5) {
+        //分割した変数が5種類出なかった場合、初期値を代入する。
+        v_lat = init_coord[0];
+        v_lng = init_coord[1];
+        v_zoom = init_zoom + 1;
+        v_bear = init_bearing;
+        v_pit = init_pitch;
+    } else {
+        //5つの値がカンマ区切りで格納されていた場合、それが数値であり規定範囲内に収まっているか検証したうえで数値を各変数に格納。
+        v_lat = (!isNaN(values[0]) && values[0] >= -50 && values[0] <= 50) ? values[0] : init_coord[0];
+        v_lng = (!isNaN(values[1]) && values[1] >= -10 && values[1] <= 25) ? values[1] : init_coord[1];
+        v_zoom = (!isNaN(values[2]) && values[2] >= 4 && values[2] <= 15) ? values[2] : init_zoom;
+        v_bear = (!isNaN(values[3]) && values[3] >= -180 && values[3] <= 180) ? values[3] : init_bearing;
+        v_pit = (!isNaN(values[4]) && values[4] >= 0 && values[4] <= 60) ? values[4] : init_pitch;
+    }
+    //代入されたパラメータに従って表示位置を移動する。移動後はupdateSettingが発火し、入力ボックスの値が移動後のものに変更される。
+    map.flyTo({center:[v_lng, v_lat], zoom:v_zoom, bearing:v_bear, pitch:v_pit, speed:0.5});
+});
 
 document.getElementById('chartButton').addEventListener('click', function () {
     const visibility01 = map.getLayoutProperty('label_pseudo', 'visibility');
@@ -559,6 +630,20 @@ document.getElementById('chartButton').addEventListener('click', function () {
     else {
         map.setLayoutProperty('label_pseudo', 'visibility', 'visible');
         visibility02.style.display = 'block';
+        this.style.backgroundColor = "white";
+        this.style.color = "black";
+    }
+});
+
+document.getElementById('settingButton').addEventListener('click', function () {
+    const visibility = document.getElementById('map-setting');
+    if (visibility.style.display === 'block') {
+        visibility.style.display = 'none';
+        this.style.backgroundColor = "#999";
+        this.style.color = "white"
+    }
+    else {
+        visibility.style.display = 'block';
         this.style.backgroundColor = "white";
         this.style.color = "black";
     }
