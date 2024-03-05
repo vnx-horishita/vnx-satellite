@@ -70,6 +70,21 @@ h3 {
     z-index: 0;
 }
 
+.info-overlay {
+    position: absolute;
+    color:#333; font-size: 13px; font-weight: bold; font-family: Helvetica, "游ゴシック体", YuGothic, "YuGothic M", sans-serif;
+    width: 50%;
+    bottom: 10%;
+    left: 25%;
+    padding: 5px 8px;
+    margin: 0 4px;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    line-height: 20px;
+    z-index: 0;
+}
+
 .setting-overlay {
     position: absolute;
     color:#111; font-size: 13px; font-weight: normal; font-family: Helvetica, "游ゴシック体", YuGothic, "YuGothic M", sans-serif;
@@ -162,17 +177,17 @@ h3 {
     cursor: pointer; /* マウスカーソルをポインターに */
 }
 
-#labelButton, #listButton, #chartButton, #settingButton {
+#labelButton, #listButton, #chartButton, #settingButton, #infoButton {
     background-color: white; /* 背景色 */
     color: black; /* テキストの色 */
     border: 2px solid #999; /* 薄い水色の枠線 */
-    padding: 10px 12px; /* 内側の余白 */
+    padding: 10px 8px; /* 内側の余白 */
     margin: 0 4px; /* 外側の余白 */
     font-size: 12px; /* フォントサイズ */
     border-radius: 5px; /* 角を丸くする */
     cursor: pointer; /* マウスカーソルをポインターに */
 }
-#labelButton:hover, #listButton:hover, #chartButton:hover, #settingButton:hover {
+#labelButton:hover, #listButton:hover, #chartButton:hover, #settingButton:hover, #infoButton:hover{
     border: 2px solid #00bcd4; /* ホバー時に枠線の色を変更し、太さを2pxに設定 */
 }
 
@@ -388,4 +403,4 @@ table.tablestyle02 tr:nth-child(odd) td {
     transform: translate(-50%, -50%);
     pointer-events: none;
     z-index: 1;
-}  
+}
